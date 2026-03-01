@@ -1,0 +1,70 @@
+# TempestDrop: System Architecture & Data Flow Diagram
+
+## High-Level Mathematical Data Flow
+
+```mermaid
+sequenceDiagram
+    participant TargetOS as Victim OS (Windows)
+    participant CoreTransmitter as Transmitter (Python/C++)
+    participant AirGap as Physical Air-Gap (Optical)
+    participant CameraAPI as Camera Sensor (Receiver)
+    participant DSP as DSP Pipeline (NumPy/SciPy)
+    participant Decoder as Protocol Decoder
+
+    rect rgb(200, 150, 150)
+    Note over TargetOS,CoreTransmitter: STAGE 1: INFECTION & ENCODING
+    TargetOS->>CoreTransmitter: Read target file (e.g., id_rsa)
+    CoreTransmitter->>CoreTransmitter: AES-256 Encrypt Payload (Optional)
+    CoreTransmitter->>CoreTransmitter: Apply Hamming(7,4) Error Correction
+    CoreTransmitter->>CoreTransmitter: Manchester Encoding (Clock Recovery)
+    CoreTransmitter->>CoreTransmitter: Frame Construction (Preamble + Size + Data + CRC32)
+    end
+
+    rect rgb(150, 200, 150)
+    Note over CoreTransmitter,AirGap: STAGE 2: PHYSICAL MODULATION
+    loop Baseband Modulation (ASK)
+        alt Bit == 1
+            CoreTransmitter->>TargetOS: Win32 API SetMonitorBrightness(Base + Δ)
+            TargetOS->>AirGap: Monitor Emits Photons (High Intensity)
+        else Bit == 0
+            CoreTransmitter->>TargetOS: Win32 API SetMonitorBrightness(Base - Δ)
+            TargetOS->>AirGap: Monitor Emits Photons (Low Intensity)
+        end
+    end
+    end
+
+    rect rgb(150, 150, 200)
+    Note over AirGap,CameraAPI: STAGE 3: OPTICAL CAPTURE
+    loop Frame Acquisition (60 FPS)
+        AirGap->>CameraAPI: Photons hit CMOS Sensor
+        CameraAPI->>CameraAPI: Lock Auto-Exposure & Auto-Focus
+        CameraAPI->>DSP: Push Raw RGB Frame Matrix (OpenCV)
+    end
+    end
+
+    rect rgb(200, 200, 150)
+    Note over DSP,Decoder: STAGE 4: DIGITAL SIGNAL PROCESSING
+    loop Signal Extraction
+        DSP->>DSP: Convert RGB -> Grayscale (Luma)
+        DSP->>DSP: Define Region of Interest (ROI)
+        DSP->>DSP: Calculate Spatial Mean Intensity: $\mu = \frac{1}{N} \sum_{i=1}^{N} I_i$
+        DSP->>DSP: Append $\mu$ to Time-Series Buffer $s(t)$
+        DSP->>DSP: Apply 4th-Order Butterworth Bandpass Filter to $s(t)$
+        DSP->>DSP: Perform Fast Fourier Transform (FFT) for Carrier Lock
+    end
+    end
+
+    rect rgb(150, 200, 200)
+    Note over DSP,Decoder: STAGE 5: DEMODULATION & RECOVERY
+    DSP->>Decoder: Pass Filtered Analog Signal $y(t)$
+    Decoder->>Decoder: Schmitt Trigger Thresholding (Analog -> Digital)
+    Decoder->>Decoder: Manchester Decoding (Phase Shift Recovery)
+    Decoder->>Decoder: Sync to Preamble (0xAA)
+    Decoder->>Decoder: CRC32 Validation
+    alt CRC Valid
+        Decoder->>TargetOS: Reconstruct Payload (id_rsa)
+    else CRC Invalid
+        Decoder->>Decoder: Request Retransmission / Wait for loop
+    end
+    end
+```

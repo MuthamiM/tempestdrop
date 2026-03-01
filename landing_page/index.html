@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TempestDrop // Advanced Air-Gap Exfiltration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --neon-green-glow: rgba(0, 255, 65, 0.5);
+            --dark-bg: #050505;
+            --glass-bg: rgba(20, 20, 20, 0.85);
+            --accent-red: #ff003c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--dark-bg);
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- Header & Nav --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 10%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            color: var(--neon-green);
+        }
+
+        nav a {
+            color: #ccc;
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--neon-green);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 1)), url('assets/images/hero.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 10%;
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            margin-bottom: 10px;
+            letter-spacing: 10px;
+            background: linear-gradient(to bottom, #fff, #555);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #aaa;
+            max-width: 800px;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--neon-green);
+            color: #000;
+            border: 1px solid var(--neon-green);
+            box-shadow: 0 0 20px var(--neon-green-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 40px var(--neon-green-glow);
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--neon-green-glow);
+            color: #fff;
+        }
+
+        /* --- Features Section --- */
+        .features {
+            padding: 100px 10%;
+            background-color: #080808;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 80px;
+            letter-spacing: 5px;
+            color: var(--neon-green);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--neon-green);
+            transform: translateY(-10px);
+        }
+
+        .card h3 {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: var(--neon-green);
+        }
+
+        .card p {
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        /* --- Download Section --- */
+        .download-box {
+            text-align: center;
+            padding: 100px 10%;
+        }
+
+        .dl-portal {
+            background: linear-gradient(135deg, #111 0%, #000 100%);
+            padding: 80px;
+            border-radius: 20px;
+            border: 1px dashed var(--neon-green);
+        }
+
+        /* --- Footer --- */
+        footer {
+            padding: 60px 10%;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #444;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">TEMPESTDROP</div>
+        <nav>
+            <a href="#features">Architecture</a>
+            <a href="#download">Download Suite</a>
+            <a href="#guide">Installation</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>TEMPESTDROP</h1>
+        <p>A sophisticated polyglot suite designed for optical side-channel data exfiltration. Crossing the air-gap with
+            light.</p>
+        <div class="cta-group">
+            <a href="#download" class="btn btn-primary">Download Suite</a>
+            <a href="#features" class="btn btn-secondary">Learn More</a>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <h2 class="section-title">THE POLYGLOT ENGINE</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>THE MODULATOR [C++/JS]</h3>
+                <p>Direct Win32 hardware hooks or zero-privilege DOM modulation to pulse the monitor at 10Hz carrier
+                    frequency.</p>
+            </div>
+            <div class="card">
+                <h3>THE INFECTOR [C#]</h3>
+                <p>Advanced data parsing, encryption, and Manchester encoding orchestration within the victim's
+                    filesystem.</p>
+            </div>
+            <div class="card">
+                <h3>THE DSP ENGINE [PYTHON]</h3>
+                <p>Real-time OpenCV capture with a 4th-Order Butterworth Bandpass filtered pipeline for light signal
+                    isolation.</p>
+            </div>
+            <div class="card">
+                <h3>THE C2 DASHBOARD [JAVA 21]</h3>
+                <p>Enterprise-grade JavaFX 21 terminal for live photon analysis, waveform graphing, and data
+                    reconstruction. Built on Java 21 LTS.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="download" class="download-box">
+        <div class="dl-portal">
+            <h2 class="section-title" style="margin-bottom: 20px;">ACCESS THE SUITE</h2>
+            <p style="margin-bottom:40px; color:#666;">Standard Release v1.0.4 // Includes all binaries, source code,
+                and extension assets.</p>
+            <a href="TempestDrop_Full_Suite.zip" class="btn btn-primary"
+                style="padding: 20px 60px; font-size: 1.1rem;">DOWNLOAD NOW (.ZIP)</a>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 TEMPESTDROP // DEVELOPED FOR THE ADVANCED SYSTEM HACKATHON. FOR EDUCATIONAL PURPOSES ONLY.
+    </footer>
+</body>
+
+</html>
